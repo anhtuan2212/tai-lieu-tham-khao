@@ -15,10 +15,14 @@
     <div id="container" style="position: relative">
       <video id="video" width="640" height="480" autoplay></video>
     </div>
+    <audio id="beep" preload="auto" style="display: none">
+      <source src="./bleep.mp3" type="audio/mpeg" />
+    </audio>
     <p id="output"></p>
     <script>
       var video = document.getElementById("video");
       var output = document.getElementById("output");
+      var beepSound = document.getElementById("beep");
 
       Quagga.init(
         {
@@ -49,6 +53,10 @@
       Quagga.onDetected(function (result) {
         output.innerText = result.codeResult.code;
         console.log(result.codeResult.code);
+
+        // Phát âm thanh beep khi mã vạch được đọc thành công
+        beepSound.play();
+
         Quagga.stop();
       });
     </script>
