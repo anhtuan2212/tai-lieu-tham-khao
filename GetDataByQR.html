@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>QR Code Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  </head>
+  <body>
+    <h1>QR Code Demo</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480" style="display: none"></canvas>
+    <p id="output"></p>
+    <script>
+      var video = document.getElementById("video");
+      var canvas = document.getElementById("canvas");
+      var context = canvas.getContext("2d");
+      var output = document.getElementById("output");
+
+      if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(function (stream) {
+            video.srcObject = stream;
+            requestAnimationFrame(tick);
+          })
+          .catch(function (error) {
+            console.log("Something went wrong");
+          });
+      }
+
+      function tick() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvas.hidden = false;
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          var imageData = context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+          var code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
+          if (code) {
+            output.innerText = code.data;
+            console.log(code.data);
+            return;
+          } else {
+            output.innerText = "No QR code found";
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+    </script>
+  </body>
+</html>

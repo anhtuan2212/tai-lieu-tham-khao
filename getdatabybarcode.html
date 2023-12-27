@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Barcode Demo</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"
+      integrity="sha512-bCsBoYoW6zE0aja5xcIyoCDPfT27+cGr7AOCqelttLVRGay6EKGQbR6wm6SUcUGOMGXJpj+jrIpMS6i80+kZPw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <h1>Barcode Demo</h1>
+    <div id="container" style="position: relative">
+      <video id="video" width="640" height="480" autoplay></video>
+    </div>
+    <p id="output"></p>
+    <script>
+      var video = document.getElementById("video");
+      var output = document.getElementById("output");
+
+      Quagga.init(
+        {
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector("#container"),
+            constraints: {
+              width: 640,
+              height: 480,
+              facingMode: "environment",
+            },
+          },
+          decoder: {
+            readers: ["code_128_reader"],
+          },
+        },
+        function (err) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          console.log("Initialization finished. Ready to start");
+          Quagga.start();
+        }
+      );
+
+      Quagga.onDetected(function (result) {
+        output.innerText = result.codeResult.code;
+        console.log(result.codeResult.code);
+        Quagga.stop();
+      });
+    </script>
+  </body>
+</html>
